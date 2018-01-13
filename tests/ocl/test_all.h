@@ -6,9 +6,6 @@
 #include "test_modbinop.h"
 #include "test_cmp.h"
 #include "test_divrem.h"
-#include "test_pm1.h"
-#include "test_pp1.h"
-#include "test_ecm.h"
 
 
 int ul_test_all(struct state_t *state) {
@@ -79,33 +76,6 @@ int ul_test_all(struct state_t *state) {
 	/* division/remainder */
 	{
 		ret = ul_divremop_test(state);
-		if (ret)
-			goto CLEANUP;
-	}
-#endif
-
-#if TESTOP_SET & TESTOP_PM1
-	/* P-1 cofactorization */
-	{
-		ret = ul_pm1op_test(state);
-		if (ret)
-			goto CLEANUP;
-	}
-#endif
-
-#if TESTOP_SET & TESTOP_PP1
-	/* P-1 cofactorization */
-	{
-		ret = ul_pp1op_test(state);
-		if (ret)
-			goto CLEANUP;
-	}
-#endif
-
-#if TESTOP_SET & TESTOP_ECM
-	/* elliptic curve cofactorization */
-	{
-		ret = ul_ecmop_test(state);
 		if (ret)
 			goto CLEANUP;
 	}

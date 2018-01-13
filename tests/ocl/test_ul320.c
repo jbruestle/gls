@@ -39,21 +39,8 @@
 #define ul_mod_inv_test    "kern_mod320_inv_test"
 
 
-
-#define ul_pm1pp1_reorder      "kern_ul320_pm1pp1_reorder"
-
-#define ul_pm1op_test      ul320_pm1op_test
-#define ul_pm1_stage1      "kern_ul320_pm1_stage1"
-#define ul_pm1_stage2      "kern_ul320_pm1_stage2"
-
-#define ul_pp1op_test      ul320_pp1op_test
-#define ul_pp1_stage1      "kern_ul320_pp1_stage1"
-#define ul_pp1_stage2      "kern_ul320_pp1_stage2"
-
 #define ul_ecmop_test      ul320_ecmop_test
 #define ul_ecm_reorder     "kern_ul320_ecm_reorder"
-#define ul_ecm_stage1      "kern_ul320_ecm_stage1"
-#define ul_ecm_stage2      "kern_ul320_ecm_stage2"
 
 
 #include "test_all.h"

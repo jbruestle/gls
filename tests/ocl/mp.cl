@@ -27,4 +27,10 @@
 #if TEST_SET & TEST_256
 #include "include/ocl/ul256_test.hl"
 #endif
+#if TEST_SET & TEST_288
+#include "include/ocl/ul288_test.hl"
+#endif
+#if TEST_SET & TEST_320
+#include "include/ocl/ul320_test.hl"
+#endif
 

@@ -5,7 +5,6 @@ all:
 	(cd tests && make all)
 	(cd tests/ocl && make all)
 	(cd makefb && make all)
-	(cd las && make all)
 	
 clean:
 	(cd misc && make clean)
@@ -14,4 +13,3 @@ clean:
 	(cd tests && make clean)
 	(cd tests/ocl && make clean)
 	(cd makefb && make clean)
-	(cd las && make clean)

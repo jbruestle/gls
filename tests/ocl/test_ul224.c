@@ -39,21 +39,8 @@
 #define ul_mod_inv_test    "kern_mod224_inv_test"
 
 
-
-#define ul_pm1pp1_reorder      "kern_ul224_pm1pp1_reorder"
-
-#define ul_pm1op_test      ul224_pm1op_test
-#define ul_pm1_stage1      "kern_ul224_pm1_stage1"
-#define ul_pm1_stage2      "kern_ul224_pm1_stage2"
-
-#define ul_pp1op_test      ul224_pp1op_test
-#define ul_pp1_stage1      "kern_ul224_pp1_stage1"
-#define ul_pp1_stage2      "kern_ul224_pp1_stage2"
-
 #define ul_ecmop_test      ul224_ecmop_test
 #define ul_ecm_reorder     "kern_ul224_ecm_reorder"
-#define ul_ecm_stage1      "kern_ul224_ecm_stage1"
-#define ul_ecm_stage2      "kern_ul224_ecm_stage2"
 
 
 #include "test_all.h"

@@ -10,6 +10,8 @@
 #define TEST_192    (1 << 5)
 #define TEST_224    (1 << 6)
 #define TEST_256    (1 << 7)
+#define TEST_288    (1 << 8)
+#define TEST_320    (1 << 9)
 
 
 #define TESTOP_ADD      (1 << 0)
@@ -23,8 +25,5 @@
 #define TESTOP_DIVREM   (1 << 8)
 #define TESTOP_MODINV   (1 << 9)
 
-#define TESTOP_PM1   (1 << 10)
-#define TESTOP_PP1   (1 << 11)
-#define TESTOP_ECM   (1 << 12)
 
 #endif /* TESTS_HL_ */

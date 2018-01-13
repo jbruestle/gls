@@ -39,8 +39,8 @@ int main() {
 	 * in the next test.
 	 */
 
-	g_config.config_platform = 0;
-	g_config.config_device = 1;
+	g_config.config_platform = 1;
+	g_config.config_device = 0;
 	main_test("-Werror -cl-mad-enable");
 	// main_test("-Werror -cl-mad-enable -D UL_NVIDIA=1");
 
