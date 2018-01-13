@@ -9,10 +9,11 @@
 
 #define PM1_BACKTRACKING 1
 
-int pm1_stage1(ul f, ul X, mod m, __local pm1_plan_t *plan, __local uint64_t *E)
+int pm1_stage1(ul f, ul X, mod m, __global pm1_plan_t *plan, __global uint64_t *E);
+int pm1_stage1(ul f, ul X, mod m, __global pm1_plan_t *plan, __global uint64_t *E)
 {
 	int i, bt;
-	__local uint64_t *E_ptr;
+	__global uint64_t *E_ptr;
 	uint64_t e, mask;
 	ul one, two, t, x;
 
@@ -49,7 +50,7 @@ int pm1_stage1(ul f, ul X, mod m, __local pm1_plan_t *plan, __local uint64_t *E)
 
 	ul_set(x, t);
 
-	for(i = 0; i < plan->exp2; i++)
+	for(i = 0; i < (int) plan->exp2; i++)
 	{
 		ul_modmul(x, x, x, m);
 #if PM1_BACKTRACKING

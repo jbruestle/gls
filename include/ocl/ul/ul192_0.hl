@@ -30,7 +30,7 @@ typedef struct mod192_s {
 /*
  * Setters
  */
-inline void ul192_set_gp(__global ul192 dst, ul192 src) {
+inline void ul192_set_gp(__global struct ul192_s *dst, ul192 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -38,7 +38,7 @@ inline void ul192_set_gp(__global ul192 dst, ul192 src) {
     dst->x[4] = src->x[4];
     dst->x[5] = src->x[5];
 }
-inline void ul192_set_pg(ul192 dst, __global ul192 src) {
+inline void ul192_set_pg(ul192 dst, __global struct ul192_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -46,7 +46,7 @@ inline void ul192_set_pg(ul192 dst, __global ul192 src) {
     dst->x[4] = src->x[4];
     dst->x[5] = src->x[5];
 }
-inline void ul192_set_gg(__global ul192 dst, __global ul192 src) {
+inline void ul192_set_gg(__global struct ul192_s *dst, __global struct ul192_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -154,7 +154,7 @@ inline void ul192_add(ul192 dst, ul192 src1, ul192 src2) {
           : "cc"
         );
     #else
-        ul192 d = { 0 };
+        ul192 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -212,7 +212,7 @@ inline void ul192_sub(ul192 dst, ul192 src1, ul192 src2) {
           : "cc"
         );
     #else
-        ul192 d = { 0 };
+        ul192 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -300,7 +300,7 @@ inline void ul192_mul(ul192 dst, ul192 src1, ul192 src2) {
           : "cc"
         );
     #else
-        ul192 d = {0};
+        ul192 d = {{{0}}};
         
         uint64_t tmp0 = ((uint64_t)src1->x[0]) * ((uint64_t)src2->x[0]);
         ul192 tmp0_;
@@ -556,6 +556,7 @@ inline void ul192_modsub(ul192 dst, ul192 src1, ul192 src2, mod192 n) {
 /*
  * Mul two ul192's modulo a third, followed by Montgomery reduction
  */
+void ul192_modmul(ul192 _dst, ul192 _src1, ul192 _src2, mod192 n);
 void ul192_modmul(ul192 _dst, ul192 _src1, ul192 _src2, mod192 n) {
     #if defined(UL_NVIDIA)
         volatile ul192 src1;
@@ -576,7 +577,7 @@ void ul192_modmul(ul192 _dst, ul192 _src1, ul192 _src2, mod192 n) {
         src2->x[5] = _src2->x[5];
         
         uint32_t q = 0;
-        ul192 dst = { 0 };
+        ul192 dst = {{{0}}};
         uint32_t dst_6 = 0;
         
         asm(
@@ -1007,32 +1008,25 @@ void ul192_modmul(ul192 _dst, ul192 _src1, ul192 _src2, mod192 n) {
         const uint32_t a_5__b_5_hi = a_5__b_5 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
-        uint32_t c_2 = 0;
         uint32_t q_2 = 0;
-        uint32_t c_3 = 0;
         uint32_t q_3 = 0;
-        uint32_t c_4 = 0;
         uint32_t q_4 = 0;
-        uint32_t c_5 = 0;
         uint32_t q_5 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
+        uint32_t c_2 = 0;
+        uint32_t c_3 = 0;
+        uint32_t c_4 = 0;
+        uint32_t c_5 = 0;
         uint32_t c_6 = 0;
-        uint32_t q_6 = 0;
         uint32_t c_7 = 0;
-        uint32_t q_7 = 0;
         uint32_t c_8 = 0;
-        uint32_t q_8 = 0;
         uint32_t c_9 = 0;
-        uint32_t q_9 = 0;
         uint32_t c_10 = 0;
-        uint32_t q_10 = 0;
         uint32_t c_11 = 0;
-        uint32_t q_11 = 0;
         uint32_t c_12 = 0;
-        uint32_t q_12 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -1457,7 +1451,7 @@ inline void ul192_to_montgomery(ul192 dst, ul192 src, mod192 mod) {
  * Convert a ul192 out-of Montgomery form
  */
 inline void ul192_from_montgomery(ul192 dst, ul192 src, mod192 mod) {
-    ul192 one = { 0 };
+    ul192 one = {{{0}}};
     one->x[0] = 1;
     
     ul192_modmul(dst, src, one, mod);

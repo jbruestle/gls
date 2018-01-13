@@ -635,9 +635,9 @@ class OclBaseGenerator
   end
   
   def gen_setters
-    prototypes = [ "inline void #{@ul}_set_gp(__global #{@ul} dst, #{@ul} src)",
-                   "inline void #{@ul}_set_pg(#{@ul} dst, __global #{@ul} src)",
-                   "inline void #{@ul}_set_gg(__global #{@ul} dst, __global #{@ul} src)",
+    prototypes = [ "inline void #{@ul}_set_gp(__global struct #{@ul}_s *dst, #{@ul} src)",
+                   "inline void #{@ul}_set_pg(#{@ul} dst, __global struct #{@ul}_s *src)",
+                   "inline void #{@ul}_set_gg(__global struct #{@ul}_s *dst, __global struct #{@ul}_s *src)",
                    "inline void #{@ul}_set(#{@ul} dst, #{@ul} src)"
                  ]
     comment "Setters"
@@ -742,7 +742,7 @@ class OclBaseGenerator
       say "#else"
       pushi(4)
         plus_carry = "0"
-        say "#{@ul} d = { 0 };"
+        say "#{@ul} d = {{{0}}};"
         @limbs.times do |n|
           say "d->x[#{n}] = (src1->x[#{n}] & 0x7fffffff) + (src2->x[#{n}] & 0x7fffffff) + #{plus_carry};"
           say "uint32_t c#{n} = (src1->x[#{n}] >> 31) + (src2->x[#{n}] >> 31) + (d->x[#{n}] >> 31);"
@@ -805,7 +805,7 @@ class OclBaseGenerator
       say "#else"
       pushi(4)
         minus_borrow = "0"
-        say "#{@ul} d = { 0 };"
+        say "#{@ul} d = {{{0}}};"
         @limbs.times do |n|
           say "d->x[#{n}] = (src1->x[#{n}] & 0x7fffffff) - (src2->x[#{n}] & 0x7fffffff) - #{minus_borrow};"
           say "uint32_t b#{n} = (src1->x[#{n}] >> 31) - (src2->x[#{n}] >> 31) - (d->x[#{n}] >> 31);"
@@ -958,7 +958,7 @@ class OclBaseGenerator
           say "dst->x[0] = d;"
           say "dst->x[1] = d >> 32;"
         else
-          say "#{@ul} d = {0};"
+          say "#{@ul} d = {{{0}}};"
           say ""
           t = 0;
           @limbs.times do |i|
@@ -1054,7 +1054,7 @@ class OclBaseGenerator
       comment "Convert a #{@ul} out-of Montgomery form"
       say "inline void #{@ul}_from_montgomery(#{@ul} dst, #{@ul} src, #{@modul} mod) {"
       pushi(4)
-        say "#{@ul} one = { 0 };"
+        say "#{@ul} one = {{{0}}};"
         say "one->x[0] = 1;"
         say ""
         say "#{@ul}_modmul(dst, src, one, mod);"
@@ -1095,6 +1095,7 @@ class OclBaseGenerator
   
   def gen_modmul
     comment "Mul two #{@ul}'s modulo a third, followed by Montgomery reduction"
+    say "void #{@ul}_modmul(#{@ul} _dst, #{@ul} _src1, #{@ul} _src2, #{@modul} n);"
     say "void #{@ul}_modmul(#{@ul} _dst, #{@ul} _src1, #{@ul} _src2, #{@modul} n) {"
     pushi(4)
       say "#if defined(#{@flag_nvidia})"
@@ -1111,7 +1112,7 @@ class OclBaseGenerator
         end
         say ""
         say "uint32_t q = 0;"
-        say "#{@ul} dst = { 0 };"
+        say "#{@ul} dst = {{{0}}};"
         say "uint32_t dst_#{@limbs} = 0;"
         say ""
         say "asm("
@@ -1382,9 +1383,11 @@ class OclBaseGenerator
         say ""
       
         say "/* Limbs of the product C = A*B */"
+        (@limbs).times do |x|
+          say "uint32_t q_#{x} = 0;"
+        end
         (2 * @limbs + 1).times do |x|
           say "uint32_t c_#{x} = 0;"
-          say "uint32_t q_#{x} = 0;"
         end
         say ""
         
@@ -1624,7 +1627,7 @@ class OclHigherGenerator
       say "tmp = tmp * (2 + n->x[0] * tmp);"
       say "dst->np = tmp;"
       say ""
-      say "#{@ul} one = { 0 };"
+      say "#{@ul} one = {{{0}}};"
       say "one->x[0] = 1;"
       say ""
       say "#{@ul}_modmul(dst->rsq, one, one, dst); /* dst->rsq <- 1/r */"
@@ -1636,10 +1639,11 @@ class OclHigherGenerator
   
   def gen_divrem
     comment "Compute the quotient with remainder of two #{@ul}'s (q = a/b_, r = a%b_, resp.)"
+    say "void #{@ul}_divrem(#{@ul} Q_, #{@ul} R_, #{@ul} A_in, #{@ul} B_in);"
     say "void #{@ul}_divrem(#{@ul} Q_, #{@ul} R_, #{@ul} A_in, #{@ul} B_in) {"
     pushi(4)
-      say "ul#{@bitwidth+32} Q = { 0 };"
-      say "#{@ul} R = { 0 };"
+      say "ul#{@bitwidth+32} Q = {{{0}}};"
+      say "#{@ul} R = {{{0}}};"
       say "if (#{@ul}_cmp(A_in, B_in) < 0) {"
       pushi(4)
         say "#{@ul}_set(Q_, (struct #{@ul}_s *)Q);"
@@ -1665,7 +1669,7 @@ class OclHigherGenerator
       say "/* the same as B's (normalization does not change it) */"
       say "/* but the same is not necessarily true of A and A_in. */"
       ["A", "B"].each do |v|
-        say "ul#{@bitwidth+32} #{v} = { 0 };"
+        say "ul#{@bitwidth+32} #{v} = {{{0}}};"
         @limbs.downto(0) do |k|
           if k == @limbs
             l = "0"
@@ -1692,7 +1696,7 @@ class OclHigherGenerator
       say "/* Compute Q->x[m]: */"
       say "{"
       pushi(4)
-        say "ul#{@bitwidth+32} beta_m_B = { 0 };"
+        say "ul#{@bitwidth+32} beta_m_B = {{{0}}};"
         say "ul#{@bitwidth+32}_lshiftw(beta_m_B, B, m);"
         say ""
         say "if (ul#{@bitwidth+32}_cmp(A, beta_m_B) >= 0) {"
@@ -1715,7 +1719,7 @@ class OclHigherGenerator
         say "/* A <- A - q_j * beta^j * B */"
         say "{"
         pushi(4)
-          say "ul#{@bitwidth+32} qjbj_B = { 0 };"
+          say "ul#{@bitwidth+32} qjbj_B = {{{0}}};"
           say "ul#{@bitwidth+32}_lshiftw(qjbj_B, B, j);"
           say "ul#{@bitwidth+32}_mulu32(qjbj_B, qjbj_B, Q->x[j]);"
           say "ul#{@bitwidth+32}_sub(A, A, qjbj_B);"
@@ -1726,7 +1730,7 @@ class OclHigherGenerator
         say "while (A->x[#{@limbs}] & (1 << 31)) {"
         pushi(4)
           say "Q->x[j]--;"
-          say "ul#{@bitwidth+32} bj_B = { 0 };"
+          say "ul#{@bitwidth+32} bj_B = {{{0}}};"
           say "ul#{@bitwidth+32}_lshiftw(bj_B, B, j);"
           say "ul#{@bitwidth+32}_add(A, A, bj_B);"
         popi
@@ -1749,12 +1753,12 @@ class OclHigherGenerator
     comment "Compute the inverse of a #{@ul} modulo another"
     say "void #{@ul}_modinv(#{@ul} dst, #{@ul} src, #{@ul} n) {"
     pushi(4)
-      say "#{@ul} zero = { 0 };"
-      say "#{@ul} u = { 0 };"
+      say "#{@ul} zero = {{{0}}};"
+      say "#{@ul} u = {{{0}}};"
       say "u->x[0] = 1;"
-      say "#{@ul} w = { 0 };"
-      say "#{@ul} b = { 0 };"
-      say "#{@ul} c = { 0 };"
+      say "#{@ul} w = {{{0}}};"
+      say "#{@ul} b = {{{0}}};"
+      say "#{@ul} c = {{{0}}};"
       say "#{@ul}_set(b, src);"
       say "#{@ul}_set(c, n);"
       say ""
@@ -1767,7 +1771,7 @@ class OclHigherGenerator
         say "#{@ul}_set(b, c);"
         say "#{@ul}_set(c, r);"
         say ""
-        say "#{@ul} temp = { 0 };"
+        say "#{@ul} temp = {{{0}}};"
         say "#{@ul}_mul(temp, q, w);"
         say "#{@ul}_sub(temp, u, temp);"
         say ""
@@ -1814,7 +1818,7 @@ class OclHigherGenerator
   end
 end
 
-(32 .. 256).step(32).each do |bitwidth|
+(32 .. 320).step(32).each do |bitwidth|
   OclTestGenerator.new(bitwidth).genAll
   HostTestGenerator.new(bitwidth).genAll
 
@@ -1827,7 +1831,7 @@ end
   OclHeaderGenerator.new(bitwidth, true).genAll
 end
 
-OclBaseGenerator.new(256+32).genAll
-OclHeaderGenerator.new(256+32, false).genAll
+OclBaseGenerator.new(320+32).genAll
+OclHeaderGenerator.new(320+32, false).genAll
 
 

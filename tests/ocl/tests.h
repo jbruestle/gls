@@ -20,9 +20,11 @@
 #define TEST_192    (1 << 5)
 #define TEST_224    (1 << 6)
 #define TEST_256    (1 << 7)
+#define TEST_288    (1 << 8)
+#define TEST_320    (1 << 9)
 
-#define TEST_ALL    (TEST_32 | TEST_64 | TEST_96 | TEST_128 | TEST_160 | TEST_192 | TEST_224 | TEST_256)
-#define TEST_SET    (TEST_64 | TEST_128)
+#define TEST_ALL    (TEST_32 | TEST_64 | TEST_96 | TEST_128 | TEST_160 | TEST_192 | TEST_224 | TEST_256 | TEST_288 | TEST_320)
+#define TEST_SET    (TEST_128 | TEST_320)
 
 
 /* And here you can configure which operations to test */
@@ -70,5 +72,7 @@ int ul160_test_all(struct state_t *state);
 int ul192_test_all(struct state_t *state);
 int ul224_test_all(struct state_t *state);
 int ul256_test_all(struct state_t *state);
+int ul288_test_all(struct state_t *state);
+int ul320_test_all(struct state_t *state);
 
 #endif /* TESTS_H_ */

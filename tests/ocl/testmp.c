@@ -9,7 +9,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/opencl.h>
+#endif
 
 #include "state.h"
 #include "ocl_error.h"
@@ -35,8 +39,8 @@ int main() {
 	 * in the next test.
 	 */
 
-	g_config.config_platform = 1;
-	g_config.config_device = 0;
+	g_config.config_platform = 0;
+	g_config.config_device = 1;
 	main_test("-Werror -cl-mad-enable");
 	// main_test("-Werror -cl-mad-enable -D UL_NVIDIA=1");
 
@@ -252,6 +256,7 @@ int main_test(const char *build_opts_in) {
 
 		/* Read the source */
 		{
+                        printf("Source file = %s\n", g_config.config_mp_source);
 			state.source.fSource = fopen(g_config.config_mp_source, "rb");
 			if (!state.source.fSource) {
 				perror("fopen");
@@ -437,6 +442,18 @@ int main_test(const char *build_opts_in) {
 
 		if (TEST_SET & TEST_256) {
 			ret = ul256_test_all(&state);
+			if (ret)
+				goto CLEANUP;
+		}
+
+		if (TEST_SET & TEST_288) {
+			ret = ul288_test_all(&state);
+			if (ret)
+				goto CLEANUP;
+		}
+
+		if (TEST_SET & TEST_320) {
+			ret = ul320_test_all(&state);
 			if (ret)
 				goto CLEANUP;
 		}

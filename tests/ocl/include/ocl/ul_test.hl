@@ -408,15 +408,15 @@ __kernel void kern_pm1_stage1(__global ul *f,
 	struct rng_t r;
 	rand_init(seed_offset + my_gid, &r);
 	
-	mod mm = { 0 };
-	ul l_m = { 0 };
+	mod mm;
+	ul l_m = {{{0}}};
 	ul_rand(&r, l_m);
 	l_m->x[0] |= 1;    /* ensure odd modulus */
 	l_m->x[limbs-1] &= 0x7fffffff;
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
-	ul l_X = { 0 };
+	ul l_f = {{{0}}};
+	ul l_X = {{{0}}};
 	bt[my_gid] = pm1_stage1(l_f, l_X, mm, plan, E);
 	
 	ul_set_gp(f[my_gid], l_f);
@@ -436,14 +436,14 @@ __kernel void kern_pm1_stage2(__global ul *f,
 	if (my_gid >= global_work_size)
 		return;
 	
-	mod mm = { 0 };
-	ul l_m = { 0 };
+	mod mm;
+	ul l_m = {{{0}}};
 	ul_set_pg(l_m, m[my_gid]);
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
+	ul l_f = {{{0}}};
 	ul_set_pg(l_f, f[my_gid]);
-	ul l_X = { 0 };
+	ul l_X = {{{0}}};
 	ul_set_pg(l_X, X[my_gid]);
 	if(ul_cmp_ui(l_f, 1) != 0) {
 	}
@@ -475,15 +475,15 @@ __kernel void kern_pp1_stage1(__global ul *f,
 	struct rng_t r;
 	rand_init(seed_offset + my_gid, &r);
 	
-	mod mm = { 0 };
-	ul l_m = { 0 };
+	mod mm;
+	ul l_m = {{{0}}};
 	ul_rand(&r, l_m);
 	l_m->x[0] |= 1;    /* ensure odd modulus */
 	l_m->x[limbs-1] &= 0x7fffffff;
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
-	ul l_X = { 0 };
+	ul l_f = {{{0}}};
+	ul l_X = {{{0}}};
 	bt[my_gid] = pp1_stage1(l_f, l_X, mm, plan, bc);
 
 	ul_set_gp(f[my_gid], l_f);
@@ -503,14 +503,14 @@ __kernel void kern_pp1_stage2(__global ul *f,
 	if (my_gid >= global_work_size)
 		return;
 	
-	mod mm = { 0 };
-	ul l_m = { 0 };
+	mod mm;
+	ul l_m = {{{0}}};
 	ul_set_pg(l_m, m[my_gid]);
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
+	ul l_f = {{{0}}};
 	ul_set_pg(l_f, f[my_gid]);
-	ul l_X = { 0 };
+	ul l_X = {{{0}}};
 	ul_set_pg(l_X, X[my_gid]);
 	if(ul_cmp_ui(l_f, 1) != 0) {
 	}
@@ -569,16 +569,16 @@ __kernel void kern_ecm_stage1(__global ul *f,
 	struct rng_t r;
 	rand_init(seed_offset + my_gid, &r);
 	
-	ul l_m = { 0 };
+	ul l_m = {{{0}}};
 	ul_rand(&r, l_m);
 	l_m->x[0] |= 1;    /* ensure odd modulus */
 	l_m->x[limbs-1] &= 0x7fffffff;
-	mod mm = { 0 };
+	mod mm;
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
-	ul l_b = { 0 };
-	ellM_point_t l_X = { 0 };
+	ul l_f = {{{0}}};
+	ul l_b = {{{0}}};
+	ellM_point_t l_X;
 	
 	bt[my_gid] = ecm_stage1(l_f, l_X, l_b, mm, plan, bc);
 
@@ -604,15 +604,15 @@ __kernel void kern_ecm_stage2(__global ul *f,
 	if (my_gid >= global_work_size)
 		return;
 	
-	ul l_m = { 0 };
+	ul l_m;
 	ul_set_pg(l_m, m[my_gid]);
 
-	mod mm = { 0 };
+	mod mm;
 	mod_set(mm, l_m);
 	
-	ul l_f = { 0 };
-	ul l_b = { 0 };
-	ellM_point_t l_X = { 0 };
+	ul l_f = {{{0}}};
+	ul l_b = {{{0}}};
+	ellM_point_t l_X;
 	
 	ul_set_pg(l_f, f[my_gid]);
 	ul_set_pg(l_b, b[my_gid]);

@@ -5,6 +5,10 @@
 #define UL288_T_H__
 
 #include "ul288_0.hl"
+#include "ul288_1.hl"
+
+#include "ul288_def.hl"
+#include "ul_common.hl"
 
 #endif /* UL288_T_H__ */
 

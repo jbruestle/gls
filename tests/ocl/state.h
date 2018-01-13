@@ -10,7 +10,12 @@
 
 #include <stdio.h>
 #include <time.h>
+
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/opencl.h>
+#endif
 
 #include "types.h"
 #include "cofact_plan.h"

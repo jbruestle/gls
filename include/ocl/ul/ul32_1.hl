@@ -11,9 +11,10 @@
 /*
  * Compute the quotient with remainder of two ul32's (q = a/b_, r = a%b_, resp.)
  */
+void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in);
 void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in) {
-    ul64 Q = { 0 };
-    ul32 R = { 0 };
+    ul64 Q = {{{0}}};
+    ul32 R = {{{0}}};
     if (ul32_cmp(A_in, B_in) < 0) {
         ul32_set(Q_, (struct ul32_s *)Q);
         ul32_set(R_, A_in);
@@ -36,11 +37,11 @@ void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in) {
     /* Normalize A_in and B_in. Note that B_in's MSW is   */
     /* the same as B's (normalization does not change it) */
     /* but the same is not necessarily true of A and A_in. */
-    ul64 A = { 0 };
+    ul64 A = {{{0}}};
     A->x[1] = (0) | ((k > 0) ? (A_in->x[0] >> (32-k)) : 0);
     A->x[0] = (A_in->x[0] << k) | (0);
     
-    ul64 B = { 0 };
+    ul64 B = {{{0}}};
     B->x[1] = (0) | ((k > 0) ? (B_in->x[0] >> (32-k)) : 0);
     B->x[0] = (B_in->x[0] << k) | (0);
     
@@ -54,7 +55,7 @@ void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in) {
     
     /* Compute Q->x[m]: */
     {
-        ul64 beta_m_B = { 0 };
+        ul64 beta_m_B = {{{0}}};
         ul64_lshiftw(beta_m_B, B, m);
         
         if (ul64_cmp(A, beta_m_B) >= 0) {
@@ -72,7 +73,7 @@ void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in) {
         
         /* A <- A - q_j * beta^j * B */
         {
-            ul64 qjbj_B = { 0 };
+            ul64 qjbj_B = {{{0}}};
             ul64_lshiftw(qjbj_B, B, j);
             ul64_mulu32(qjbj_B, qjbj_B, Q->x[j]);
             ul64_sub(A, A, qjbj_B);
@@ -81,7 +82,7 @@ void ul32_divrem(ul32 Q_, ul32 R_, ul32 A_in, ul32 B_in) {
         /* If A < 0, roll back Q->x[j] and adjust A: */
         while (A->x[1] & (1 << 31)) {
             Q->x[j]--;
-            ul64 bj_B = { 0 };
+            ul64 bj_B = {{{0}}};
             ul64_lshiftw(bj_B, B, j);
             ul64_add(A, A, bj_B);
         }
@@ -110,7 +111,7 @@ inline void mod32_set(mod32 dst, ul32 n) {
     tmp = tmp * (2 + n->x[0] * tmp);
     dst->np = tmp;
     
-    ul32 one = { 0 };
+    ul32 one = {{{0}}};
     one->x[0] = 1;
     
     ul32_modmul(dst->rsq, one, one, dst); /* dst->rsq <- 1/r */

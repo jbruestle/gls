@@ -83,7 +83,8 @@ static void mod_V_ul(ul r, ul b, const uint64_t e, mod m)
 	return;
 }
 
-void pp1_stage2(ul f, ul X, mod m, __local stage2_plan_t *plan, __local uint32_t *S1, __local unsigned char *pairs)
+void pp1_stage2(ul f, ul X, mod m, __global stage2_plan_t *plan, __global uint32_t *S1, __global unsigned char *pairs);
+void pp1_stage2(ul f, ul X, mod m, __global stage2_plan_t *plan, __global uint32_t *S1, __global unsigned char *pairs)
 {
 	ul one, two;
 	ul Xd, Xid, Xid1, a, a_bk, t;
@@ -101,7 +102,7 @@ void pp1_stage2(ul f, ul X, mod m, __local stage2_plan_t *plan, __local uint32_t
 	ul_to_montgomery(X, X, m);
 
 	{
-		int i1, i5;
+		unsigned int i1, i5;
 		ul ap1_0, ap1_1, ap5_0, ap5_1, X2, X6;
 
 		ul_init(ap1_0);
@@ -244,7 +245,7 @@ void pp1_stage2(ul f, ul X, mod m, __local stage2_plan_t *plan, __local uint32_t
 	return;
 }
 
-static inline void pp1_stage1_bc(ul X, __local const uint8_t *code, ul two, mod m)
+static inline void pp1_stage1_bc(ul X, __global const uint8_t *code, ul two, mod m)
 {
 	ul A, B, C, t, t2;
 
@@ -378,7 +379,8 @@ end_of_bytecode:
 	return;
 }
 
-int pp1_stage1(ul f, ul X, mod m, __local pp1_plan_t *plan, __local uint8_t *bc)
+int pp1_stage1(ul f, ul X, mod m, __global pp1_plan_t *plan, __global uint8_t *bc);
+int pp1_stage1(ul f, ul X, mod m, __global pp1_plan_t *plan, __global uint8_t *bc)
 {
 	ul b, two, save, t;
 	unsigned int i;

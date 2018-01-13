@@ -30,19 +30,19 @@ typedef struct mod128_s {
 /*
  * Setters
  */
-inline void ul128_set_gp(__global ul128 dst, ul128 src) {
+inline void ul128_set_gp(__global struct ul128_s *dst, ul128 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
     dst->x[3] = src->x[3];
 }
-inline void ul128_set_pg(ul128 dst, __global ul128 src) {
+inline void ul128_set_pg(ul128 dst, __global struct ul128_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
     dst->x[3] = src->x[3];
 }
-inline void ul128_set_gg(__global ul128 dst, __global ul128 src) {
+inline void ul128_set_gg(__global struct ul128_s *dst, __global struct ul128_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -135,7 +135,7 @@ inline void ul128_add(ul128 dst, ul128 src1, ul128 src2) {
           : "cc"
         );
     #else
-        ul128 d = { 0 };
+        ul128 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -179,7 +179,7 @@ inline void ul128_sub(ul128 dst, ul128 src1, ul128 src2) {
           : "cc"
         );
     #else
-        ul128 d = { 0 };
+        ul128 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -235,7 +235,7 @@ inline void ul128_mul(ul128 dst, ul128 src1, ul128 src2) {
           : "cc"
         );
     #else
-        ul128 d = {0};
+        ul128 d = {{{0}}};
         
         uint64_t tmp0 = ((uint64_t)src1->x[0]) * ((uint64_t)src2->x[0]);
         ul128 tmp0_;
@@ -359,6 +359,7 @@ inline void ul128_modsub(ul128 dst, ul128 src1, ul128 src2, mod128 n) {
 /*
  * Mul two ul128's modulo a third, followed by Montgomery reduction
  */
+void ul128_modmul(ul128 _dst, ul128 _src1, ul128 _src2, mod128 n);
 void ul128_modmul(ul128 _dst, ul128 _src1, ul128 _src2, mod128 n) {
     #if defined(UL_NVIDIA)
         volatile ul128 src1;
@@ -375,7 +376,7 @@ void ul128_modmul(ul128 _dst, ul128 _src1, ul128 _src2, mod128 n) {
         src2->x[3] = _src2->x[3];
         
         uint32_t q = 0;
-        ul128 dst = { 0 };
+        ul128 dst = {{{0}}};
         uint32_t dst_4 = 0;
         
         asm(
@@ -598,24 +599,19 @@ void ul128_modmul(ul128 _dst, ul128 _src1, ul128 _src2, mod128 n) {
         const uint32_t a_3__b_3_hi = a_3__b_3 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
-        uint32_t c_2 = 0;
         uint32_t q_2 = 0;
-        uint32_t c_3 = 0;
         uint32_t q_3 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
+        uint32_t c_2 = 0;
+        uint32_t c_3 = 0;
         uint32_t c_4 = 0;
-        uint32_t q_4 = 0;
         uint32_t c_5 = 0;
-        uint32_t q_5 = 0;
         uint32_t c_6 = 0;
-        uint32_t q_6 = 0;
         uint32_t c_7 = 0;
-        uint32_t q_7 = 0;
         uint32_t c_8 = 0;
-        uint32_t q_8 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -842,7 +838,7 @@ inline void ul128_to_montgomery(ul128 dst, ul128 src, mod128 mod) {
  * Convert a ul128 out-of Montgomery form
  */
 inline void ul128_from_montgomery(ul128 dst, ul128 src, mod128 mod) {
-    ul128 one = { 0 };
+    ul128 one = {{{0}}};
     one->x[0] = 1;
     
     ul128_modmul(dst, src, one, mod);

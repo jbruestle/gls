@@ -30,7 +30,7 @@ typedef struct mod288_s {
 /*
  * Setters
  */
-inline void ul288_set_gp(__global ul288 dst, ul288 src) {
+inline void ul288_set_gp(__global struct ul288_s *dst, ul288 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -41,7 +41,7 @@ inline void ul288_set_gp(__global ul288 dst, ul288 src) {
     dst->x[7] = src->x[7];
     dst->x[8] = src->x[8];
 }
-inline void ul288_set_pg(ul288 dst, __global ul288 src) {
+inline void ul288_set_pg(ul288 dst, __global struct ul288_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -52,7 +52,7 @@ inline void ul288_set_pg(ul288 dst, __global ul288 src) {
     dst->x[7] = src->x[7];
     dst->x[8] = src->x[8];
 }
-inline void ul288_set_gg(__global ul288 dst, __global ul288 src) {
+inline void ul288_set_gg(__global struct ul288_s *dst, __global struct ul288_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -183,7 +183,7 @@ inline void ul288_add(ul288 dst, ul288 src1, ul288 src2) {
           : "cc"
         );
     #else
-        ul288 d = { 0 };
+        ul288 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -262,7 +262,7 @@ inline void ul288_sub(ul288 dst, ul288 src1, ul288 src2) {
           : "cc"
         );
     #else
-        ul288 d = { 0 };
+        ul288 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -413,7 +413,7 @@ inline void ul288_mul(ul288 dst, ul288 src1, ul288 src2) {
           : "cc"
         );
     #else
-        ul288 d = {0};
+        ul288 d = {{{0}}};
         
         uint64_t tmp0 = ((uint64_t)src1->x[0]) * ((uint64_t)src2->x[0]);
         ul288 tmp0_;
@@ -1047,6 +1047,7 @@ inline void ul288_modsub(ul288 dst, ul288 src1, ul288 src2, mod288 n) {
 /*
  * Mul two ul288's modulo a third, followed by Montgomery reduction
  */
+void ul288_modmul(ul288 _dst, ul288 _src1, ul288 _src2, mod288 n);
 void ul288_modmul(ul288 _dst, ul288 _src1, ul288 _src2, mod288 n) {
     #if defined(UL_NVIDIA)
         volatile ul288 src1;
@@ -1073,7 +1074,7 @@ void ul288_modmul(ul288 _dst, ul288 _src1, ul288 _src2, mod288 n) {
         src2->x[8] = _src2->x[8];
         
         uint32_t q = 0;
-        ul288 dst = { 0 };
+        ul288 dst = {{{0}}};
         uint32_t dst_9 = 0;
         
         asm(
@@ -1951,44 +1952,34 @@ void ul288_modmul(ul288 _dst, ul288 _src1, ul288 _src2, mod288 n) {
         const uint32_t a_8__b_8_hi = a_8__b_8 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
-        uint32_t c_2 = 0;
         uint32_t q_2 = 0;
-        uint32_t c_3 = 0;
         uint32_t q_3 = 0;
-        uint32_t c_4 = 0;
         uint32_t q_4 = 0;
-        uint32_t c_5 = 0;
         uint32_t q_5 = 0;
-        uint32_t c_6 = 0;
         uint32_t q_6 = 0;
-        uint32_t c_7 = 0;
         uint32_t q_7 = 0;
-        uint32_t c_8 = 0;
         uint32_t q_8 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
+        uint32_t c_2 = 0;
+        uint32_t c_3 = 0;
+        uint32_t c_4 = 0;
+        uint32_t c_5 = 0;
+        uint32_t c_6 = 0;
+        uint32_t c_7 = 0;
+        uint32_t c_8 = 0;
         uint32_t c_9 = 0;
-        uint32_t q_9 = 0;
         uint32_t c_10 = 0;
-        uint32_t q_10 = 0;
         uint32_t c_11 = 0;
-        uint32_t q_11 = 0;
         uint32_t c_12 = 0;
-        uint32_t q_12 = 0;
         uint32_t c_13 = 0;
-        uint32_t q_13 = 0;
         uint32_t c_14 = 0;
-        uint32_t q_14 = 0;
         uint32_t c_15 = 0;
-        uint32_t q_15 = 0;
         uint32_t c_16 = 0;
-        uint32_t q_16 = 0;
         uint32_t c_17 = 0;
-        uint32_t q_17 = 0;
         uint32_t c_18 = 0;
-        uint32_t q_18 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -2830,7 +2821,7 @@ inline void ul288_to_montgomery(ul288 dst, ul288 src, mod288 mod) {
  * Convert a ul288 out-of Montgomery form
  */
 inline void ul288_from_montgomery(ul288 dst, ul288 src, mod288 mod) {
-    ul288 one = { 0 };
+    ul288 one = {{{0}}};
     one->x[0] = 1;
     
     ul288_modmul(dst, src, one, mod);

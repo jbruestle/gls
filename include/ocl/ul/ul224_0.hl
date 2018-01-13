@@ -30,7 +30,7 @@ typedef struct mod224_s {
 /*
  * Setters
  */
-inline void ul224_set_gp(__global ul224 dst, ul224 src) {
+inline void ul224_set_gp(__global struct ul224_s *dst, ul224 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -39,7 +39,7 @@ inline void ul224_set_gp(__global ul224 dst, ul224 src) {
     dst->x[5] = src->x[5];
     dst->x[6] = src->x[6];
 }
-inline void ul224_set_pg(ul224 dst, __global ul224 src) {
+inline void ul224_set_pg(ul224 dst, __global struct ul224_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -48,7 +48,7 @@ inline void ul224_set_pg(ul224 dst, __global ul224 src) {
     dst->x[5] = src->x[5];
     dst->x[6] = src->x[6];
 }
-inline void ul224_set_gg(__global ul224 dst, __global ul224 src) {
+inline void ul224_set_gg(__global struct ul224_s *dst, __global struct ul224_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -164,7 +164,7 @@ inline void ul224_add(ul224 dst, ul224 src1, ul224 src2) {
           : "cc"
         );
     #else
-        ul224 d = { 0 };
+        ul224 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -229,7 +229,7 @@ inline void ul224_sub(ul224 dst, ul224 src1, ul224 src2) {
           : "cc"
         );
     #else
-        ul224 d = { 0 };
+        ul224 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -336,7 +336,7 @@ inline void ul224_mul(ul224 dst, ul224 src1, ul224 src2) {
           : "cc"
         );
     #else
-        ul224 d = {0};
+        ul224 d = {{{0}}};
         
         uint64_t tmp0 = ((uint64_t)src1->x[0]) * ((uint64_t)src2->x[0]);
         ul224 tmp0_;
@@ -691,6 +691,7 @@ inline void ul224_modsub(ul224 dst, ul224 src1, ul224 src2, mod224 n) {
 /*
  * Mul two ul224's modulo a third, followed by Montgomery reduction
  */
+void ul224_modmul(ul224 _dst, ul224 _src1, ul224 _src2, mod224 n);
 void ul224_modmul(ul224 _dst, ul224 _src1, ul224 _src2, mod224 n) {
     #if defined(UL_NVIDIA)
         volatile ul224 src1;
@@ -713,7 +714,7 @@ void ul224_modmul(ul224 _dst, ul224 _src1, ul224 _src2, mod224 n) {
         src2->x[6] = _src2->x[6];
         
         uint32_t q = 0;
-        ul224 dst = { 0 };
+        ul224 dst = {{{0}}};
         uint32_t dst_7 = 0;
         
         asm(
@@ -1275,36 +1276,28 @@ void ul224_modmul(ul224 _dst, ul224 _src1, ul224 _src2, mod224 n) {
         const uint32_t a_6__b_6_hi = a_6__b_6 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
-        uint32_t c_2 = 0;
         uint32_t q_2 = 0;
-        uint32_t c_3 = 0;
         uint32_t q_3 = 0;
-        uint32_t c_4 = 0;
         uint32_t q_4 = 0;
-        uint32_t c_5 = 0;
         uint32_t q_5 = 0;
-        uint32_t c_6 = 0;
         uint32_t q_6 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
+        uint32_t c_2 = 0;
+        uint32_t c_3 = 0;
+        uint32_t c_4 = 0;
+        uint32_t c_5 = 0;
+        uint32_t c_6 = 0;
         uint32_t c_7 = 0;
-        uint32_t q_7 = 0;
         uint32_t c_8 = 0;
-        uint32_t q_8 = 0;
         uint32_t c_9 = 0;
-        uint32_t q_9 = 0;
         uint32_t c_10 = 0;
-        uint32_t q_10 = 0;
         uint32_t c_11 = 0;
-        uint32_t q_11 = 0;
         uint32_t c_12 = 0;
-        uint32_t q_12 = 0;
         uint32_t c_13 = 0;
-        uint32_t q_13 = 0;
         uint32_t c_14 = 0;
-        uint32_t q_14 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -1852,7 +1845,7 @@ inline void ul224_to_montgomery(ul224 dst, ul224 src, mod224 mod) {
  * Convert a ul224 out-of Montgomery form
  */
 inline void ul224_from_montgomery(ul224 dst, ul224 src, mod224 mod) {
-    ul224 one = { 0 };
+    ul224 one = {{{0}}};
     one->x[0] = 1;
     
     ul224_modmul(dst, src, one, mod);

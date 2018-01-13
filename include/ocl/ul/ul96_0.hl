@@ -30,17 +30,17 @@ typedef struct mod96_s {
 /*
  * Setters
  */
-inline void ul96_set_gp(__global ul96 dst, ul96 src) {
+inline void ul96_set_gp(__global struct ul96_s *dst, ul96 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
 }
-inline void ul96_set_pg(ul96 dst, __global ul96 src) {
+inline void ul96_set_pg(ul96 dst, __global struct ul96_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
 }
-inline void ul96_set_gg(__global ul96 dst, __global ul96 src) {
+inline void ul96_set_gg(__global struct ul96_s *dst, __global struct ul96_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
     dst->x[2] = src->x[2];
@@ -126,7 +126,7 @@ inline void ul96_add(ul96 dst, ul96 src1, ul96 src2) {
           : "cc"
         );
     #else
-        ul96 d = { 0 };
+        ul96 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -163,7 +163,7 @@ inline void ul96_sub(ul96 dst, ul96 src1, ul96 src2) {
           : "cc"
         );
     #else
-        ul96 d = { 0 };
+        ul96 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -206,7 +206,7 @@ inline void ul96_mul(ul96 dst, ul96 src1, ul96 src2) {
           : "cc"
         );
     #else
-        ul96 d = {0};
+        ul96 d = {{{0}}};
         
         uint64_t tmp0 = ((uint64_t)src1->x[0]) * ((uint64_t)src2->x[0]);
         ul96 tmp0_;
@@ -291,6 +291,7 @@ inline void ul96_modsub(ul96 dst, ul96 src1, ul96 src2, mod96 n) {
 /*
  * Mul two ul96's modulo a third, followed by Montgomery reduction
  */
+void ul96_modmul(ul96 _dst, ul96 _src1, ul96 _src2, mod96 n);
 void ul96_modmul(ul96 _dst, ul96 _src1, ul96 _src2, mod96 n) {
     #if defined(UL_NVIDIA)
         volatile ul96 src1;
@@ -305,7 +306,7 @@ void ul96_modmul(ul96 _dst, ul96 _src1, ul96 _src2, mod96 n) {
         src2->x[2] = _src2->x[2];
         
         uint32_t q = 0;
-        ul96 dst = { 0 };
+        ul96 dst = {{{0}}};
         uint32_t dst_3 = 0;
         
         asm(
@@ -451,20 +452,16 @@ void ul96_modmul(ul96 _dst, ul96 _src1, ul96 _src2, mod96 n) {
         const uint32_t a_2__b_2_hi = a_2__b_2 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
-        uint32_t c_2 = 0;
         uint32_t q_2 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
+        uint32_t c_2 = 0;
         uint32_t c_3 = 0;
-        uint32_t q_3 = 0;
         uint32_t c_4 = 0;
-        uint32_t q_4 = 0;
         uint32_t c_5 = 0;
-        uint32_t q_5 = 0;
         uint32_t c_6 = 0;
-        uint32_t q_6 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -616,7 +613,7 @@ inline void ul96_to_montgomery(ul96 dst, ul96 src, mod96 mod) {
  * Convert a ul96 out-of Montgomery form
  */
 inline void ul96_from_montgomery(ul96 dst, ul96 src, mod96 mod) {
-    ul96 one = { 0 };
+    ul96 one = {{{0}}};
     one->x[0] = 1;
     
     ul96_modmul(dst, src, one, mod);

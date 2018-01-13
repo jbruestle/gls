@@ -8,8 +8,11 @@
 #ifndef OCL_ERROR_H_
 #define OCL_ERROR_H_
 
-
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/opencl.h>
+#endif
 
 const char *ocl_error_str(cl_int err);
 

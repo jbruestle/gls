@@ -30,13 +30,13 @@ typedef struct mod32_s {
 /*
  * Setters
  */
-inline void ul32_set_gp(__global ul32 dst, ul32 src) {
+inline void ul32_set_gp(__global struct ul32_s *dst, ul32 src) {
     dst->x[0] = src->x[0];
 }
-inline void ul32_set_pg(ul32 dst, __global ul32 src) {
+inline void ul32_set_pg(ul32 dst, __global struct ul32_s *src) {
     dst->x[0] = src->x[0];
 }
-inline void ul32_set_gg(__global ul32 dst, __global ul32 src) {
+inline void ul32_set_gg(__global struct ul32_s *dst, __global struct ul32_s *src) {
     dst->x[0] = src->x[0];
 }
 inline void ul32_set(ul32 dst, ul32 src) {
@@ -107,7 +107,7 @@ inline void ul32_add(ul32 dst, ul32 src1, ul32 src2) {
           : "cc"
         );
     #else
-        ul32 d = { 0 };
+        ul32 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -131,7 +131,7 @@ inline void ul32_sub(ul32 dst, ul32 src1, ul32 src2) {
           : "cc"
         );
     #else
-        ul32 d = { 0 };
+        ul32 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -193,6 +193,7 @@ inline void ul32_modsub(ul32 dst, ul32 src1, ul32 src2, mod32 n) {
 /*
  * Mul two ul32's modulo a third, followed by Montgomery reduction
  */
+void ul32_modmul(ul32 _dst, ul32 _src1, ul32 _src2, mod32 n);
 void ul32_modmul(ul32 _dst, ul32 _src1, ul32 _src2, mod32 n) {
     #if defined(UL_NVIDIA)
         volatile ul32 src1;
@@ -203,7 +204,7 @@ void ul32_modmul(ul32 _dst, ul32 _src1, ul32 _src2, mod32 n) {
         src2->x[0] = _src2->x[0];
         
         uint32_t q = 0;
-        ul32 dst = { 0 };
+        ul32 dst = {{{0}}};
         uint32_t dst_1 = 0;
         
         asm(
@@ -247,12 +248,10 @@ void ul32_modmul(ul32 _dst, ul32 _src1, ul32 _src2, mod32 n) {
         const uint32_t a_0__b_0_hi = a_0__b_0 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
+        uint32_t c_0 = 0;
         uint32_t c_1 = 0;
-        uint32_t q_1 = 0;
         uint32_t c_2 = 0;
-        uint32_t q_2 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -302,7 +301,7 @@ inline void ul32_to_montgomery(ul32 dst, ul32 src, mod32 mod) {
  * Convert a ul32 out-of Montgomery form
  */
 inline void ul32_from_montgomery(ul32 dst, ul32 src, mod32 mod) {
-    ul32 one = { 0 };
+    ul32 one = {{{0}}};
     one->x[0] = 1;
     
     ul32_modmul(dst, src, one, mod);

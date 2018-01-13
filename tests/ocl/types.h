@@ -10,7 +10,12 @@
 
 #include <stdio.h>
 #include <gmp.h>
+
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/opencl.h>
+#endif
 
 typedef cl_uchar u_int8_t;
 typedef cl_uint u_int32_t;
@@ -159,6 +164,69 @@ static inline void mpz_set_ocl_ul256(mpz_t dst, ocl_ul256 *src) {
 	unsigned long int v0 = ((unsigned long int)(src->v1) << 32) | src->v0;
 
 	mpz_set_ui(dst, v3);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v2);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v1);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v0);
+}
+
+
+typedef struct ocl_ul288_t {
+	u_int32_t v0;
+	u_int32_t v1;
+	u_int32_t v2;
+	u_int32_t v3;
+	u_int32_t v4;
+	u_int32_t v5;
+	u_int32_t v6;
+	u_int32_t v7;
+	u_int32_t v8;
+} ocl_ul288;
+
+static inline void mpz_set_ocl_ul288(mpz_t dst, ocl_ul288 *src) {
+	unsigned long int v4 = src->v8;
+	unsigned long int v3 = ((unsigned long int)(src->v7) << 32) | src->v6;
+	unsigned long int v2 = ((unsigned long int)(src->v5) << 32) | src->v4;
+	unsigned long int v1 = ((unsigned long int)(src->v3) << 32) | src->v2;
+	unsigned long int v0 = ((unsigned long int)(src->v1) << 32) | src->v0;
+
+	mpz_set_ui(dst, v4);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v3);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v2);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v1);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v0);
+}
+
+
+typedef struct ocl_ul320_t {
+	u_int32_t v0;
+	u_int32_t v1;
+	u_int32_t v2;
+	u_int32_t v3;
+	u_int32_t v4;
+	u_int32_t v5;
+	u_int32_t v6;
+	u_int32_t v7;
+	u_int32_t v8;
+	u_int32_t v9;
+} ocl_ul320;
+
+static inline void mpz_set_ocl_ul320(mpz_t dst, ocl_ul320 *src) {
+	unsigned long int v4 = ((unsigned long int)(src->v9) << 32) | src->v8;
+	unsigned long int v3 = ((unsigned long int)(src->v7) << 32) | src->v6;
+	unsigned long int v2 = ((unsigned long int)(src->v5) << 32) | src->v4;
+	unsigned long int v1 = ((unsigned long int)(src->v3) << 32) | src->v2;
+	unsigned long int v0 = ((unsigned long int)(src->v1) << 32) | src->v0;
+
+	mpz_set_ui(dst, v4);
+	mpz_mul_2exp(dst, dst, 64);
+	mpz_add_ui(dst, dst, v3);
 	mpz_mul_2exp(dst, dst, 64);
 	mpz_add_ui(dst, dst, v2);
 	mpz_mul_2exp(dst, dst, 64);

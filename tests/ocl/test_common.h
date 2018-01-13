@@ -12,7 +12,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/opencl.h>
+#endif
+
 #include <gmp.h>
 
 

@@ -406,7 +406,7 @@ static int ellW_mul_ui(ellW_point_t P, unsigned long e, ul a, mod m)
  * corresponding elliptic curve operations on (x::z)
  */
 
-static void ellM_interpret_bytecode(ellM_point_t P, __local uint8_t *code, mod m, ul b)
+static void ellM_interpret_bytecode(ellM_point_t P, __global uint8_t *code, mod m, ul b)
 {
 	ellM_point_t A, B, C, t, t2;
 
@@ -952,7 +952,8 @@ static void common_z(const int n1, ul *x1, ul *z1, int n2, ul *x2, ul *z2, mod m
 	return;
 }
 
-int ecm_stage2(ul r, ellM_point_t P, ul b, mod m, __local stage2_plan_t *plan, __local uint32_t *S1, __local unsigned char *pairs)
+int ecm_stage2(ul r, ellM_point_t P, ul b, mod m, __global stage2_plan_t *plan, __global uint32_t *S1, __global unsigned char *pairs);
+int ecm_stage2(ul r, ellM_point_t P, ul b, mod m, __global stage2_plan_t *plan, __global uint32_t *S1, __global unsigned char *pairs)
 {
 	ellM_point_t Pd, Pt; /* d*P, i*d*P, (i+1)*d*P and a temp */
 
@@ -1014,7 +1015,7 @@ int ecm_stage2(ul r, ellM_point_t P, ul b, mod m, __local stage2_plan_t *plan, _
    */
 	{
 		ellM_point_t ap1_0, ap1_1, ap5_0, ap5_1, P2, P6;
-		int i1, i5;
+		unsigned int i1, i5;
 
 		ellM_init(ap1_0);
 		ellM_init(ap1_1);
@@ -1339,7 +1340,8 @@ int ecm_stage2(ul r, ellM_point_t P, ul b, mod m, __local stage2_plan_t *plan, _
 /* Stores any factor found in f_out (1 if no factor found).
    If back-tracking was used, returns 1, otherwise returns 0. */
 
-int ecm_stage1(ul f, ellM_point_t P, ul b, mod m, __local ecm_plan_t *plan, __local uint8_t *bc)
+int ecm_stage1(ul f, ellM_point_t P, ul b, mod m, __global ecm_plan_t *plan, __global uint8_t *bc);
+int ecm_stage1(ul f, ellM_point_t P, ul b, mod m, __global ecm_plan_t *plan, __global uint8_t *bc)
 {
 	ul u, r;
 	ellM_point_t Pt;

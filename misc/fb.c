@@ -57,7 +57,7 @@ int fb_fileread(fb_t fb, const char *fname)
 	fb->map_len = ftell(fb->fd);
 	fseek(fb->fd, 0, SEEK_SET);
 
-	fb->map_ptr = mmap(NULL, fb->map_len, PROT_READ, MAP_SHARED | MAP_POPULATE, fileno(fb->fd), 0);
+	fb->map_ptr = mmap(NULL, fb->map_len, PROT_READ, MAP_SHARED, fileno(fb->fd), 0);
 	if(fb->map_ptr == MAP_FAILED)
 	{
 		perror("fb_fileread:mmap");

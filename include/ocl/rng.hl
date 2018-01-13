@@ -10,6 +10,7 @@ struct rng_t {
 	uint64_t w;
 };
 
+uint64_t rand_uint64(struct rng_t *r);
 uint64_t rand_uint64(struct rng_t *r) {
 	r->u = r->u * 2862933555777941757L + 7046029254386353087L;
     r->v ^= r->v >> 17; r->v ^= r->v << 31; r->v ^= r->v >> 8;
@@ -18,6 +19,7 @@ uint64_t rand_uint64(struct rng_t *r) {
     return (x + r->v) ^ r->w;
 }
 
+void rand_init(uint64_t j, struct rng_t *r);
 void rand_init(uint64_t j, struct rng_t *r) {
     r->v = 4101842887655102017L;
     r->w = 1;

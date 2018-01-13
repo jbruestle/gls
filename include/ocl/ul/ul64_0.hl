@@ -30,15 +30,15 @@ typedef struct mod64_s {
 /*
  * Setters
  */
-inline void ul64_set_gp(__global ul64 dst, ul64 src) {
+inline void ul64_set_gp(__global struct ul64_s *dst, ul64 src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
 }
-inline void ul64_set_pg(ul64 dst, __global ul64 src) {
+inline void ul64_set_pg(ul64 dst, __global struct ul64_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
 }
-inline void ul64_set_gg(__global ul64 dst, __global ul64 src) {
+inline void ul64_set_gg(__global struct ul64_s *dst, __global struct ul64_s *src) {
     dst->x[0] = src->x[0];
     dst->x[1] = src->x[1];
 }
@@ -116,7 +116,7 @@ inline void ul64_add(ul64 dst, ul64 src1, ul64 src2) {
           : "cc"
         );
     #else
-        ul64 d = { 0 };
+        ul64 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) + (src2->x[0] & 0x7fffffff) + 0;
         uint32_t c0 = (src1->x[0] >> 31) + (src2->x[0] >> 31) + (d->x[0] >> 31);
         d->x[0] = (c0 << 31) | (d->x[0] & 0x7fffffff);
@@ -146,7 +146,7 @@ inline void ul64_sub(ul64 dst, ul64 src1, ul64 src2) {
           : "cc"
         );
     #else
-        ul64 d = { 0 };
+        ul64 d = {{{0}}};
         d->x[0] = (src1->x[0] & 0x7fffffff) - (src2->x[0] & 0x7fffffff) - 0;
         uint32_t b0 = (src1->x[0] >> 31) - (src2->x[0] >> 31) - (d->x[0] >> 31);
         d->x[0] = (b0 << 31) | (d->x[0] & 0x7fffffff);
@@ -219,6 +219,7 @@ inline void ul64_modsub(ul64 dst, ul64 src1, ul64 src2, mod64 n) {
 /*
  * Mul two ul64's modulo a third, followed by Montgomery reduction
  */
+void ul64_modmul(ul64 _dst, ul64 _src1, ul64 _src2, mod64 n);
 void ul64_modmul(ul64 _dst, ul64 _src1, ul64 _src2, mod64 n) {
     #if defined(UL_NVIDIA)
         volatile ul64 src1;
@@ -231,7 +232,7 @@ void ul64_modmul(ul64 _dst, ul64 _src1, ul64 _src2, mod64 n) {
         src2->x[1] = _src2->x[1];
         
         uint32_t q = 0;
-        ul64 dst = { 0 };
+        ul64 dst = {{{0}}};
         uint32_t dst_2 = 0;
         
         asm(
@@ -318,16 +319,13 @@ void ul64_modmul(ul64 _dst, ul64 _src1, ul64 _src2, mod64 n) {
         const uint32_t a_1__b_1_hi = a_1__b_1 >> 32;
         
         /* Limbs of the product C = A*B */
-        uint32_t c_0 = 0;
         uint32_t q_0 = 0;
-        uint32_t c_1 = 0;
         uint32_t q_1 = 0;
+        uint32_t c_0 = 0;
+        uint32_t c_1 = 0;
         uint32_t c_2 = 0;
-        uint32_t q_2 = 0;
         uint32_t c_3 = 0;
-        uint32_t q_3 = 0;
         uint32_t c_4 = 0;
-        uint32_t q_4 = 0;
         
         /* The product of the q_i's with N */
         uint64_t q_0__N_0 = 0;
@@ -420,7 +418,7 @@ inline void ul64_to_montgomery(ul64 dst, ul64 src, mod64 mod) {
  * Convert a ul64 out-of Montgomery form
  */
 inline void ul64_from_montgomery(ul64 dst, ul64 src, mod64 mod) {
-    ul64 one = { 0 };
+    ul64 one = {{{0}}};
     one->x[0] = 1;
     
     ul64_modmul(dst, src, one, mod);
